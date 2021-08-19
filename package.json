@@ -1,0 +1,29 @@
+{
+  "name": "omb_system_borrow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:start": "node server.js"
+  },
+  "author": "it_ombudsman",
+  "license": "ombudsman.go.th",
+  "dependencies": {
+    "bluebird": "^3.2.1",
+    "body-parser": "^1.13.0",
+    "ejs": "^2.4.1",
+    "express": "^4.13.3",
+    "express-validator": "^2.18.0",
+    "jade": "^1.11.0",
+    "joi": "^7.2.3",
+    "joibird": "^1.0.0",
+    "lodash": "^4.16.4",
+    "pkgcloud": "^1.3.0",
+    "request-promise": "^3.0.0",
+    "serve-favicon": "^2.3.0",
+    "stream": "0.0.2"
+  },
+  "devDependencies": {
+    "uuid": "^2.0.1"
+  }
+}

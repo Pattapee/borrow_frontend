@@ -1,0 +1,122 @@
+<div class="row" ng-controller="statusborrowController as statusborrowController"
+  ng-init="statusborrowController.getInformation()">
+  <!-- Button trigger modal -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">ตารางข้อมูลสถานะการยืมเงิน</h1>
+  </div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr class="text-center">
+          <th scope="col" colspan="12" class="text-left">
+            <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm text-white" data-toggle="modal"
+              data-target="#statusborrowAddModal"><i
+                class="fas fa-download fa-sm text-white-50"></i>&nbsp;เพิ่มข้อมูลสถานะการยืมเงิน</a>
+          </th>
+        </tr>
+        <tr class="text-center">
+          <th scope="col">#</th>
+          <th scope="col">ชื่อสถานะการยืม</th>
+          <th scope="col">วันที่สร้าง</th>
+          <th scope="col">เปลี่ยนแปลงล่าสุด</th>
+          <th scope="col" colspan="2">Manament</th>
+        </tr>
+      </thead>
+      <tbody class="text-center">
+        <tr ng-repeat="information in informations | filter:search | orderBy: 'id'">
+          <td class="text-center">
+            {{ $index + 1 }}
+          </td>
+          <td class="text-center">
+            {{ information.status }}
+          </td>
+          <td class="text-center">
+            <p ng-bind="information.created | date:'dd/MM/yyyy'"></p>
+          </td>
+          <td class="text-center">
+            <p ng-bind="information.updated | date:'dd/MM/yyyy'"></p>
+          </td>
+          <td>
+            <i class="far fa-edit" aria-hidden="true" data-toggle="modal" data-target="#statusborrowEditModal"
+              ng-click="statusborrowController.showMenuEdit(information)"></i>
+          </td>
+          <td ng-show="information.id > 6">
+            <i class="fa fa-trash" aria-hidden="true" ng-click="statusborrowController.delStatus(information.id)"></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Modal Add-->
+  <div class="modal fade" id="statusborrowAddModal" tabindex="-1" role="dialog" aria-labelledby="statusborrowAddModal"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="statusborrowAddModal">
+            เพิ่มข้อมูลสถานะการยืมเงิน
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 text-right">
+              <label for="appname">สถานะการยืมเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <input type="text" name="statusName" ng-model="statusName" id="statusName" class="form-control"
+                ng-model-options="{ getterSetter: true }" />
+              &nbsp;
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            ปิด
+          </button>
+          <button type="button" class="btn btn-success" ng-click="statusborrowController.createStatus(information.id)">
+            บันทึก
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal Edit-->
+  <div class="modal fade" id="statusborrowEditModal" tabindex="-2" role="dialog" aria-labelledby="statusborrowEditModal"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="statusborrowEditModal">
+            แก้ไขข้อมูลสถานะการยืมเงิน
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6 text-right">
+              <label for="appname">สถานะการยืมเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <input type="text" name="statusNameEdit" ng-model="statusNameEdit" id="statusNameEdit"
+                class="form-control" ng-model-options="{ getterSetter: true }" />
+              &nbsp;
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            ปิด
+          </button>
+          <button type="button" class="btn btn-success" ng-click="statusborrowController.editStatus()">
+            อัพเดท
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

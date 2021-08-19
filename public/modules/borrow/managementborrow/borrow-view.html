@@ -1,0 +1,487 @@
+<div class="row" ng-controller="borrowController as borrowController" ng-init="borrowController.getInformation()">
+  <!-- Button trigger modal -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">ตารางข้อมูลการยืมเงิน <span id="ip"></span></h1>
+  </div>
+  <div class="container-fluid">
+    <a href="#" class="btn btn-sm btn-primary shadow-sm" data-toggle="modal" data-target="#borrowAddModal"><i
+        class="fas fa-download fa-sm text-white-50"></i>&nbsp;เพิ่มข้อมูลการยืมเงิน</a>
+    <p></p>
+    <div class="form-inline">
+      <label class="from-control"><i class="fas fa-search"></i>&nbsp;ค้นหาข้อมูล:&nbsp;&nbsp;</label>
+      <input type="text" name="searchText" ng-model="searchText" id="searchText"
+        class="form-control" />&nbsp;&nbsp;&nbsp;
+      <button class="btn btn-info from-control" ng-click="borrowController.exportTable()">
+        <i class="far fa-file-pdf"></i>&nbsp; รายงานตารางข้อมูลการยืมเงิน</button>
+    </div>
+    <hr>
+    <div class="form-inline text-right">
+      <label class="from-control">&nbsp;
+        <input type="checkbox" ng-model="checkboxModel.value1"
+          ng-change="borrowController.filterstatusBorrow3(checkboxModel.value1)">&nbsp;
+        แสดงข้อมูลผู้ที่ส่งคืนเงินยืมเรียบร้อยแล้วทั้งหมด&nbsp;&nbsp;</label>
+    </div>
+    <table id="mainTable" class="table table-responsive ">
+      <thead>
+        <tr class="text-center align-middle table-primary ">
+          <!-- <th class="col-1">#</th> -->
+          <th class="col-1"><a href="#" ng-click="orderByField='number'; reverseSort = !reverseSort">
+              สัญญาเลขที่ <span ng-show="orderByField == 'number'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <th class="col-1"><a href="#" ng-click="orderByField='userName'; reverseSort = !reverseSort">
+              ผู้ยืมเงิน <span ng-show="orderByField == 'userName'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <th class="col-1"><a href="#" ng-click="orderByField='borrowDate'; reverseSort = !reverseSort">
+              วันที่ยืมเงิน<span ng-show="orderByField == 'borrowDate'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <th class="col-1"><a href="#" ng-click="orderByField='deadlineDate'; reverseSort = !reverseSort">
+              กำหนดคืนเงิน<span ng-show="orderByField == 'deadlineDate'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <th class="col-1"><a href="#" ng-click="orderByField='dayDifference'; reverseSort = !reverseSort">
+              จำนวนวันที่เหลือ <span ng-show="orderByField == 'dayDifference'"><span
+                  ng-show="!reverseSort">^</span><span ng-show="reverseSort">v</span></span>
+            </a></th>
+          <th class="col-2"><a href="#" ng-click="orderByField='objecttive'; reverseSort = !reverseSort">
+              วัตถุประสงค์ <span ng-show="orderByField == 'objecttive'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <!-- <th class="col"><a href="#" ng-click="orderByField='typeBorrow.id'; reverseSort = !reverseSort">
+              ประเภทการยืม <span ng-show="orderByField == 'typeBorrow.id'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th> -->
+          <!-- <th class="col"><a href="#" ng-click="orderByField='reference'; reverseSort = !reverseSort">
+              ยอดใบสำคัญจ่าย <span ng-show="orderByField == 'reference'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th> -->
+          <th class="col-1"><a href="#" ng-click="orderByField='moneyBorrow'; reverseSort = !reverseSort">
+              จำนวนเงินยืม <span ng-show="orderByField == 'moneyBorrow'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <!-- <th class="col">ยอดเงินคงเหลือ</th> -->
+          <!-- <th class="col"><a href="#" ng-click="orderByField='billNumber'; reverseSort = !reverseSort">
+              ใบเสร็จเลขที่ <span ng-show="orderByField == 'billNumber'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th> -->
+          <th class="col-1"><a href="#" ng-click="orderByField='statusBorrow.id'; reverseSort = !reverseSort">
+              สถานะการยืม <span ng-show="orderByField == 'statusBorrow.id'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <th class="col-1"><a href="#" ng-click="orderByField='returnDate'; reverseSort = !reverseSort">
+              วันที่คืนเงิน <span ng-show="orderByField == 'returnDate'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <th class="col-1">
+            เงินคงเหลือ
+            </a></th>
+          <th class="col-1">
+            เลขที่ใบเสร็จ
+            </a></th>
+          <th class="col-2"><a href="#" ng-click="orderByField='remark'; reverseSort = !reverseSort">
+              หมายเหตุ <span ng-show="orderByField == 'remark'"><span ng-show="!reverseSort">^</span><span
+                  ng-show="reverseSort">v</span></span>
+            </a></th>
+          <th class="col-2" colspan="2">การจัดการ</th>
+        </tr>
+      </thead>
+      <tbody class="text-center align-middle">
+        <tr ng-repeat=" informationBorrow in informationBorrows |
+          filter: searchText | orderBy:orderByField:reverseSort"
+          ng-if="informationBorrow.statusBorrow.id !== filterStatusborrowid3"
+          ng-class="{ 'table-danger': informationBorrow.statusBorrow.id == '4' || informationBorrow.statusBorrow.id == '6' || (informationBorrow.dayDifference <=3 && informationBorrow.dayDifference >0),
+            'table-success': informationBorrow.statusBorrow.id == '3',
+            'table-warning': informationBorrow.statusBorrow.id == '1'|| informationBorrow.statusBorrow.id == '2' || informationBorrow.statusBorrow.id == '5' && informationBorrow.dayDifference <= 10}">
+          <!-- <td class="text-center align-middle col-1">
+            {{ $index + 1 }}
+          </td> -->
+          <td class="text-center align-middle col-1">
+            <p class="font-weight-light">{{ informationBorrow.number }}</p>
+          </td>
+          <td class="text-center align-middle">
+            {{ informationBorrow.userName }}
+          </td>
+          <td class="text-center align-middle">
+            <p ng-bind="informationBorrow.borrowDate | date:'dd/MM/yyyy'"></p>
+          </td>
+          <td class="text-center align-middle">
+            <p ng-bind="informationBorrow.deadlineDate | date:'dd/MM/yyyy'"></p>
+          </td>
+          <td class="text-center align-middle">
+            {{ informationBorrow.dayDifference }}
+          </td>
+          <td class="text-center align-middle">
+            {{ informationBorrow.objecttive }}
+          </td>
+          <!-- <td class="text-center align-middle">
+            {{ informationBorrow.typeBorrow.type }}
+          </td> -->
+          <!-- <td class="text-center align-middle">
+            {{ informationBorrow.reference }}
+          </td> -->
+          <td class="text-center align-middle">
+            {{ informationBorrow.moneyBorrow }}
+          </td>
+          <td class="text-center align-middle">
+            {{ informationBorrow.statusBorrow.status }}
+          </td>
+          <!-- <td class="text-center align-middle">
+            <p ng-bind="informationBorrow.created | date:'dd/MM/yyyy'"></p>
+          </td> -->
+          <td class="text-center align-middle">
+            <p ng-bind="informationBorrow.returnDate | date:'dd/MM/yyyy'"></p>
+          </td>
+          <td class="text-center align-middle">
+            {{informationBorrow.bhmShowmoneyBorrow}}
+          </td>
+          <td class="text-center align-middle">
+            {{informationBorrow.bhmShowBillNumber}}
+          </td>
+          <td class="text-center align-middle">
+            {{ informationBorrow.remark }}
+          </td>
+          <td class="text-center align-middle col-1">
+            <i class="far fa-edit" aria-hidden="true" data-toggle="modal" data-target="#exampleModal"
+              data-whatever="{{ informationBorrow.id }}"></i>
+          </td>
+          <td class="text-center align-middle col-1">
+            <a class="fa fa-trash" aria-hidden="true" ng-click="borrowController.delBorrow(informationBorrow.id)"></a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Start Modal Add Borrow -->
+  <div class="modal fade" id="borrowAddModal" tabindex="-1" role="dialog" aria-labelledby="borrowAddModal"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="borrowAddModal">
+            เพิ่มข้อมูลการยืมเงิน
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="no">สัญญาเลขที่:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <input type="text" name="numbertxt" ng-model="numbertxt" id="numbertxt" class="form-control"
+                ng-model-options="{ getterSetter: true }" required />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="user">ผู้ยืมเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <input type="text" name="usertxt" ng-model="usertxt" id="usertxt" class="form-control"
+                ng-model-options="{ getterSetter: true }" disabled />
+            </div>
+            <div class="col-md-2 form-inline">
+              <button type="button" class="btn btn-info btn-sm" ng-click="borrowController.checkNameuser(usertxt)">
+                ค้นหา
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="borrowDate">วันที่ยืมเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <input type="text" name="borrowDatetxt" ng-model="borrowDatetxt" class="form-control" id="borrowDatetxt"
+                ng-model-options="{ getterSetter: true }" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="typeborrow">ประเภทการยืม:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <select class="custom-select" id="inputGroupSelect01" ng-model="typeborrowtxt"
+                ng-change="borrowController.changedValuetypeBorrow(typeborrowtxt)"
+                data-ng-options="informationTypeborrow as informationTypeborrow.type for informationTypeborrow in informationTypeborrows">
+                <option value="">เลือกประเภทการยืม</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="deadlineDate">กำหนดคืนเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <input type="text" name="deadlineDatetxt" ng-model="deadlineDatetxt" class="form-control"
+                id="deadlineDatetxt" disabled />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="objecttive">วัตถุประสงค์:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <textarea type="textarea" name="objecttivetxt" ng-model="objecttivetxt" id="objecttive"
+                class="form-control rounded-0" rows="3" ng-model-options="{ getterSetter: true }"></textarea>
+            </div>
+          </div>
+          <!--     <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="reference">ยอดใบสำคัญจ่าย:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <input type="text" name="referencetxt" ng-model="referencetxt" id="referencetxt" class="form-control"
+                ng-model-options="{ getterSetter: true }" required />
+            </div>
+          </div> -->
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="moneyBorrow">จำนวนเงินยืม:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <input type="number" name="moneyBorrowtxt" ng-model="moneyBorrowtxt" id="moneyBorrowtxt" step="any"
+                class="form-control" ng-model-options="{ getterSetter: true }" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="remark">หมายเหตุ:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <textarea type="textarea" name="remarktxt" ng-model="remarktxt" id="remarktxt"
+                class="form-control rounded-0" rows="3" ng-model-options="{ getterSetter: true }"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="typeborrow">สถานะการยืม:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <select class="custom-select" id="inputGroupSelect01" ng-model="statusBorrowtxt"
+                ng-change="borrowController.changedValuestatusBorrow(statusBorrowtxt)"
+                data-ng-options="informationStatus as informationStatus.status for informationStatus in informationStatus">
+                <option value="">เลือกสถานะการยืม</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            ปิด
+          </button>
+          <button type="button" class="btn btn-success" ng-click="borrowController.createBorrow()">
+            บันทึก
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- End Modal Add Borrow -->
+  <!-- Start Modal Edit Borrow -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">แก้ไข / เปลี่ยนแปลง ข้อมูลการยืม</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="no">สัญญาเลขที่:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <p ng-bind="dataEdit.number"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="user">ผู้ยืมเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <p ng-bind="dataEdit.userName"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="borrowDate">วันที่ยืมเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <p ng-bind="dataEdit.borrowDate | date:'dd/MM/yyyy'"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="deadlineDate">กำหนดคืนเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <p ng-bind="dataEdit.deadlineDate | date:'dd/MM/yyyy'"></p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="objecttive">วัตถุประสงค์:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <textarea type="textarea" name="objecttivetxtEdit" ng-model="dataEdit.objecttive" id="objecttivetxtEdit"
+                class="form-control rounded-0" rows="3" ng-model-options="{ getterSetter: true }"></textarea>
+            </div>
+          </div>
+          <!-- <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="typeborrow">ประเภทการยืม:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <p>{{dataEdit.typeBorrow.type}}</p>
+            </div>
+          </div> -->
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="moneyBorrow">จำนวนเงินยืม:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <input type="text" name="moneyBorrowtxtEdit" ng-model="dataEdit.moneyBorrow" id="moneyBorrowtxtEdit"
+                class="form-control" ng-model-options="{ getterSetter: true }" readonly />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="reference">ยอดใบสำคัญจ่าย:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <input type="number" name="referencetxtEdit" ng-model="dataEdit.reference" id="referencetxtEdit"
+                class="form-control" ng-model-options="{ getterSetter: true }" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="billNumber">เลขที่ใบเสร็จ:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <input type="text" name="billNumbertxtEdit" ng-model="dataEditbhm.billNumber" id="billNumbertxtEdit"
+                class="form-control" ng-model-options="{ getterSetter: true }" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="bhmmoneyBorrow">จำนวนเงินคืน:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <input type="number" name="bhmmoneyBorrowtxtEdit" ng-model="dataEditbhm.moneyBorrow" ng-min="0"
+                id="bhmmoneyBorrowtxtEdit" class="form-control" ng-model-options="{ getterSetter: true }" step=".01" />
+            </div>
+          </div>
+          <!-- <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="billNumber">ยอดเงินคงค้าง:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <input type="text" name="balancetxtEdit" ng-model="dataEdit.balance" id="balancetxtEdit"
+                class="form-control" ng-model-options="{ getterSetter: true }" step=".01" readonly />
+            </div>
+          </div> -->
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="remark">หมายเหตุ:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <textarea type="textarea" name="remarktxtEdit" ng-model="dataEdit.remark" id="remarktxtEdit"
+                class="form-control rounded-0" rows="3" ng-model-options="{ getterSetter: true }"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 text-right">
+              <label for="typeborrow">สถานะการยืม:</label>
+            </div>
+            <div class="col-md-6 form-inline text-left">
+              <select class="custom-select" id="inputGroupSelect01" ng-model="dataEdit.statusBorrow"
+                ng-change="borrowController.changedValuestatusBorrow(dataEdit.statusBorrow, dataEdit.borrowDate)"
+                data-ng-options="informationStatus as informationStatus.status for informationStatus in informationStatus">
+              </select>
+            </div>
+          </div>
+          <div class="row" ng-show="statusborrow.id == 3">
+            <div class="col-md-4 text-right">
+              <label for="borrowDate">วันที่คืนเงิน:</label>
+            </div>
+            <div class="col-md-6 form-inline">
+              <input type="text" name="returnDateEdit" ng-model="returnDateEdit" class="form-control"
+                id="returnDateEdit" />
+            </div>
+          </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">ปิด</button>
+          <button type="button" class="btn btn-success" ng-click="borrowController.editBorrow()">อัพเดท</button>
+        </div>
+        <h4>
+          <u>ประวัตการคืนเงิน</u>
+        </h4>
+        <table class="table-responsive table-bordered">
+          <thead>
+            <tr>
+              <th class="col-1 text-center">เลขที่ใบเสร็จ</th>
+              <th class="col-2 text-center">จำนวนเงินคืน</th>
+              <th class="col-2 text-center">วันที่คืนเงิน</th>
+              <th class="col-1 text-center">จัดการข้อมูล</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="value in databhms | orderBy:'-id'" class="text-center">
+              <td class="col-1 text-center">{{value.billNumber}}</td class="col-1 text-center">
+              <td class="col-1 text-center">{{value.moneyBorrow}}</td>
+              <td class="col-1 text-center">{{value.created}}</td>
+              <td class="text-center align-middle col-1">
+                <a class="fa fa-trash" aria-hidden="true" ng-click="borrowController.delBhm(value.id)"></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- End Modal Edit Borrow -->
+  <hr>
+  <div class=" card">
+    <h5 class="card-header">รายงานข้อมูลการยืมเงิน</h5>
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          รายงานลูกหนี้เงินยืมทดรองจ่ายทั้งหมด
+          (ทะเบียนลูกหนี้เงินยืม)&nbsp;<button class="btn btn-sm btn-info shadow-sm" ng-click="borrowController.Report1()"><i
+              class="far fa-file-pdf"></i>&nbsp;โหลดรายงาน</button>
+          <div class="col-md-4 text-left">
+            <label for="borrowDate">วันที่เริ่มต้น:</label>
+            <input type="text" name="report1startdate" ng-model="report1startdate" class="form-control" id="report1startdate"
+              ng-model-options="{ getterSetter: true }" />
+          </div>
+          <div class="col-md-4 text-left">
+            <label for="borrowDate">วันที่สิ้นสุด:</label>
+            <input type="text" name="report1enddate" ng-model="report1enddate" class="form-control" id="report1enddate"
+              ng-model-options="{ getterSetter: true }" />
+          </div>
+        </li>
+        <li class="list-group-item">
+          รายงานลูกหนี้เงินยืมทดรองจ่าย คงเหลือ ณ
+          ปัจจุบัน&nbsp;<button class="btn btn-sm btn-info shadow-sm" ng-click="borrowController.Report2()"><i
+              class="far fa-file-pdf"></i>&nbsp;โหลดรายงาน</button></li>
+        <li class="list-group-item">
+          รายงานลูกหนี้เงินยืมที่ครบกำหนด&nbsp;<button class="btn btn-sm btn-info shadow-sm"
+            ng-click="borrowController.Report3()"><i class="far fa-file-pdf"></i>&nbsp;โหลดรายงาน</button>
+        </li>
+        <li class="list-group-item">
+          รายงานลูกหนี้เงินยืมที่ส่งเอกสารก่อนวันครบกำหนด แต่เอกสารไม่สมบูรณ์/แก้ไข&nbsp;<button
+            class="btn btn-sm btn-info shadow-sm" ng-click="borrowController.Report4()"><i
+              class="far fa-file-pdf"></i>&nbsp;โหลดรายงาน</button></li>
+      </ul>
+    </div>
+  </div>
+</div>
